@@ -1,0 +1,24 @@
+{
+    "name": "p2p_server",
+    "version": "1.0.0",
+    "description": "p2p cross by udp server",
+    "main": "main.js",
+    "scripts": {
+        "start": "node --use_strict main.js"
+    },
+    "keywords": [
+        "p2p",
+        "tcp",
+        "udp",
+        "socket"
+    ],
+    "author": "Zane Xu",
+    "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": ""
+    },
+    "dependencies": {
+        
+    }
+}
