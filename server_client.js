@@ -6,7 +6,7 @@ const msg_table = require("./message_table");
 const dgram = require("dgram");
 
 //解析Message
-var parser = function pasreMessage(socket, udp_server, json) {
+var parser = (socket, udp_server, json) => {
     //反序列化
     var message = JSON.parse(json);
     var msg;
