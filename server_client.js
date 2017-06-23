@@ -49,6 +49,7 @@ var parser = function pasreMessage(socket, udp_server, json) {
             //给双方发送udp连接数据
             connect_msg.extraNet = to_extra;
             connect_msg.intraNet = to_intra;
+            connect_msg.content = from_extra.substring(0, from_extra.indexOf(":"));
             //var msg_from = Buffer.from(JSON.stringify(connect_msg));
             // udp_server.send(msg_from, from_extra.substring(from_extra.indexOf(":") + 1, from_extra.length), from_extra.substring(0, from_extra.indexOf(":")), (err) => {
             //     console.log(`error in send udp message: ${err}`);
@@ -57,6 +58,7 @@ var parser = function pasreMessage(socket, udp_server, json) {
 
             connect_msg.extraNet = from_extra;
             connect_msg.intraNet = from_intra;
+            connect_msg.content = to_extra.substring(0, to_extra.indexOf(":"));
             var msg_to = Buffer.from(JSON.stringify(connect_msg));
             udp_server.send(msg_to, to_extra.substring(to_extra.indexOf(":") + 1, to_extra.length), to_extra.substring(0, to_extra.indexOf(":")), (err) => {
                 console.log(`error in send udp message: ${err}`);
