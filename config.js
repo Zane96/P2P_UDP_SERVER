@@ -8,6 +8,7 @@ const MESSAGE_TYPE_QUIT = "quit";
 const MESSAGE_TYPE_QUIT_RESULT = "quit_result";
 const MESSAGE_TYPE_CONNECT = "connect";
 const MESSAGE_TYPE_CONNECT_RESULT = "connect_result";
+const MESSAGE_TYEP_NOT_FOUND = "not_found";
 
 module.exports = {
     "host" : SERVER_HOST,
@@ -17,5 +18,6 @@ module.exports = {
     "quit" : MESSAGE_TYPE_QUIT,
     "quit_result" : MESSAGE_TYPE_QUIT_RESULT,
     "connect" : MESSAGE_TYPE_CONNECT,
-    "connect_result" : MESSAGE_TYPE_CONNECT_RESULT
+    "connect_result" : MESSAGE_TYPE_CONNECT_RESULT,
+    "not_found" : MESSAGE_TYEP_NOT_FOUND
 }

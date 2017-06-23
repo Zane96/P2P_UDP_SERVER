@@ -25,7 +25,7 @@ var msg_not_found = {
     intraNet : "",
     host : "",
     port : 0,
-    messageType : config["connect_result"],
+    messageType : config["not_found"],
     content : "not found"
 };
 

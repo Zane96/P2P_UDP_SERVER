@@ -1,10 +1,10 @@
 //管理登陆的Point的数据
 
-//{"name" : {11.112.24.24:9090/11.112.24.24:8080}}
+//{"name" : "11.112.24.24:8080""}
 var point_table = new Map();
 
-var setPoint = (name, extraNet, intraNet) => {
-    point_table.set(name, `${extraNet}/${intraNet}`);
+var setPoint = (name, intraNet) => {
+    point_table.set(name, intraNet);
 };
 
 var getPoint = (name) => {

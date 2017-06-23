@@ -14,16 +14,29 @@ var parser = function pasreMessage(socket, udp_server, json) {
     console.log(`parse`);
     if(config["login"] === message.messageType) {
         console.log(`login`);
-        point_table.setPoint(message.content, `${socket.remoteAddress}:${socket.remotePort}`, message.intraNet);
+        point_table.setPoint(message.content, message.intraNet);
+
         socket.write(JSON.stringify(msg_table["login_result"]) + "\n");
         console.log(`send message: ${JSON.stringify(msg_table["login_result"])}`);
     } else if (config["quit"] === message.messageType) {
         point_table.deletPoint(message.content);
+        point_table.deletPoint(message.intraNet);
         socket.write(JSON.stringify(msg_table["quit_result"]) + "\n");
+
         console.log(`send message: ${JSON.stringify(msg_table["quit_result"])}`);
     } else if (config["connect"] === message.messageType) {
-        var point = point_table.getPoint(message.content);
-        if (point !== undefined) {
+        var connect_info = message.content;
+        var from_name = connect_info.substring(0, connect_info.indexOf(":"));
+        var to_name = connect_info.substring(connect_info.indexOf(":") + 1, connect_info.length);
+        console.log("found name------" + from_name + " " + to_name);
+        var from_intra = point_table.getPoint(from_name);
+        var to_intra = point_table.getPoint(to_name);
+
+        console.log("found ------" + from_intra + " " + to_intra);
+        if (from_intra !== undefined && to_intra !== undefined) {
+            var from_extra = point_table.getPoint(from_intra);
+            var to_extra = point_table.getPoint(to_intra);
+
             var connect_msg = {
                 extraNet : "",
                 intraNet : "",
@@ -32,20 +45,22 @@ var parser = function pasreMessage(socket, udp_server, json) {
                 messageType : config["connect_result"],
                 content : "success"
             } 
-            connect_msg.extraNet = point.substring(0, point.indexOf("/"));
-            connect_msg.intraNet = point.substring(point.indexOf("/") + 1, point.length);
+            
+            //给双方发送udp连接数据
+            connect_msg.extraNet = to_extra;
+            connect_msg.intraNet = to_intra;
+            //var msg_from = Buffer.from(JSON.stringify(connect_msg));
+            // udp_server.send(msg_from, from_extra.substring(from_extra.indexOf(":") + 1, from_extra.length), from_extra.substring(0, from_extra.indexOf(":")), (err) => {
+            //     console.log(`error in send udp message: ${err}`);
+            // });
+            socket.write(JSON.stringify(connect_msg) + "\n");
 
-            //给双方发送UDP数据
-            var extraNet = connect_msg.extraNet;
-            console.log(extraNet.substring(extraNet.indexOf(":") + 1, extraNet.length));
-            console.log(socket.remotePort);
-            var msg = new Buffer(JSON.stringify(connect_msg) + "\n");
-            udp_server.send(msg, 0, msg.length, socket.remotePort, socket.remoteAddress);
-
-            connect_msg.extraNet = socket.remoteAddress + ":" + socket.remotePort;
-            connect_msg.intraNet = message.intraNet;
-            var msg2 = new Buffer(JSON.stringify(connect_msg) + "\n");
-            udp_server.send(msg2, 0, msg2.length, extraNet.substring(extraNet.indexOf(":") + 1, extraNet.length), extraNet.substring(0, extraNet.indexOf(":")));
+            connect_msg.extraNet = from_extra;
+            connect_msg.intraNet = from_intra;
+            var msg_to = Buffer.from(JSON.stringify(connect_msg));
+            udp_server.send(msg_to, to_extra.substring(to_extra.indexOf(":") + 1, to_extra.length), to_extra.substring(0, to_extra.indexOf(":")), (err) => {
+                console.log(`error in send udp message: ${err}`);
+            });
             
             console.log(`send udp message: ${JSON.stringify(connect_msg)}`);
         } else {
@@ -59,6 +74,10 @@ var register = () => {
     const udp_server = dgram.createSocket("udp4");
     udp_server.on("message", (msg, rinfo) => {
         console.log(`${msg} : ${rinfo.address}:${rinfo.port} cross the udp pipe`);
+
+        //存储应用内网地址到udp通道的外网地址的映射
+        var message = JSON.parse(msg);
+        point_table.setPoint(message.content, `${rinfo.address}:${rinfo.port}`);
     });
     
     udp_server.on("listening", () => {
